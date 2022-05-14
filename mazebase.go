@@ -11,28 +11,45 @@ const (
 )
 
 type position struct {
-	x int
-	y int
+	x uint32
+	y uint32
 }
 
 type cell struct {
 	pos   position
-	walls []direction
+	walls [4]cellWall
 }
 
-func generateCells(width int, height int) []cell {
+type cellWall struct {
+	dir    direction
+	isOpen bool
+}
+
+func generateCells(width uint32, height uint32) []cell {
 	cells := []cell{}
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			newCell := cell{
-				pos: position{
-					x: x,
-					y: y,
-				},
-				walls: []direction{},
-			}
+	for x := uint32(0); x < width; x++ {
+		for y := uint32(0); y < height; y++ {
+			newCell := createCell(x, y)
 			cells = append(cells, newCell)
 		}
 	}
 	return cells
+}
+
+func createCell(x uint32, y uint32) cell {
+	return cell{
+		pos: position{
+			x, y,
+		},
+		walls: [4]cellWall{
+			createWall(Up),
+			createWall(Down),
+			createWall(Left),
+			createWall(Right),
+		},
+	}
+}
+
+func createWall(dir direction) cellWall {
+	return cellWall{dir: dir, isOpen: false}
 }
