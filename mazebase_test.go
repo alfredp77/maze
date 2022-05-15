@@ -83,3 +83,20 @@ func TestGetCellIndex(t *testing.T) {
 		}
 	}
 }
+
+func TestGetCellNeighbour_Up(t *testing.T) {
+	maze := generateMazeBase(2, 3)
+
+	cellN00 := maze.getCellNeighbour(maze.getCell(0, 0), Up)
+	if cellN00 != nil {
+		t.Error("Expected no Up neighbour for (0,0)")
+	}
+
+	cellN11 := maze.getCellNeighbour(maze.getCell(1, 1), Up)
+	expectedN11 := maze.getCell(1, 0)
+	if cellN11 == nil {
+		t.Error("Expected to have neighbour for (1,1) but found none")
+	} else if *cellN11 != expectedN11 {
+		t.Errorf("Expected neighbour for (1,1) is %v, actual %v", expectedN11, *cellN11)
+	}
+}
