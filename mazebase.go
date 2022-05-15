@@ -73,10 +73,32 @@ func (m maze) getCellIndex(x uint32, y uint32) uint32 {
 
 func (m maze) getCellNeighbour(c cell, dir direction) *cell {
 	if dir == Up {
-		if c.pos.y >= 1 {
+		if c.pos.y > 0 {
 			found := m.getCell(c.pos.x, c.pos.y-1)
 			return &found
 		}
 	}
+
+	if dir == Down {
+		if c.pos.y < m.height-1 {
+			found := m.getCell(c.pos.x, c.pos.y+1)
+			return &found
+		}
+	}
+
+	if dir == Left {
+		if c.pos.x > 0 {
+			found := m.getCell(c.pos.x-1, c.pos.y)
+			return &found
+		}
+	}
+
+	if dir == Right {
+		if c.pos.x < m.width-1 {
+			found := m.getCell(c.pos.x+1, c.pos.y)
+			return &found
+		}
+	}
+
 	return nil
 }

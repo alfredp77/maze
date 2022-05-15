@@ -87,16 +87,67 @@ func TestGetCellIndex(t *testing.T) {
 func TestGetCellNeighbour_Up(t *testing.T) {
 	maze := generateMazeBase(2, 3)
 
-	cellN00 := maze.getCellNeighbour(maze.getCell(0, 0), Up)
-	if cellN00 != nil {
+	noNeighbour := maze.getCellNeighbour(maze.getCell(0, 0), Up)
+	if noNeighbour != nil {
 		t.Error("Expected no Up neighbour for (0,0)")
 	}
 
-	cellN11 := maze.getCellNeighbour(maze.getCell(1, 1), Up)
-	expectedN11 := maze.getCell(1, 0)
-	if cellN11 == nil {
+	neighbour := maze.getCellNeighbour(maze.getCell(1, 1), Up)
+	expected := maze.getCell(1, 0)
+	if neighbour == nil {
 		t.Error("Expected to have neighbour for (1,1) but found none")
-	} else if *cellN11 != expectedN11 {
-		t.Errorf("Expected neighbour for (1,1) is %v, actual %v", expectedN11, *cellN11)
+	} else if *neighbour != expected {
+		t.Errorf("Expected Up neighbour for (1,1) is %v, actual %v", expected, *neighbour)
+	}
+}
+
+func TestGetCellNeighbour_Down(t *testing.T) {
+	maze := generateMazeBase(2, 3)
+
+	noNeighbour := maze.getCellNeighbour(maze.getCell(1, 2), Down)
+	if noNeighbour != nil {
+		t.Error("Expected no Down neighbour for (1,2)")
+	}
+
+	neighbour := maze.getCellNeighbour(maze.getCell(0, 1), Down)
+	expected := maze.getCell(0, 2)
+	if neighbour == nil {
+		t.Error("Expected to have neighbour for (0,1) but found none")
+	} else if *neighbour != expected {
+		t.Errorf("Expected Down neighbour for (0,1) is %v, actual %v", expected, *neighbour)
+	}
+}
+
+func TestGetCellNeighbour_Left(t *testing.T) {
+	maze := generateMazeBase(4, 3)
+
+	noNeighbour := maze.getCellNeighbour(maze.getCell(0, 1), Left)
+	if noNeighbour != nil {
+		t.Error("Expected no Left neighbour for (0,1)")
+	}
+
+	neighbour := maze.getCellNeighbour(maze.getCell(1, 2), Left)
+	expected := maze.getCell(0, 2)
+	if neighbour == nil {
+		t.Error("Expected to have neighbour for (1,2) but found none")
+	} else if *neighbour != expected {
+		t.Errorf("Expected Left neighbour for (1,2) is %v, actual %v", expected, *neighbour)
+	}
+}
+
+func TestGetCellNeighbour_Right(t *testing.T) {
+	maze := generateMazeBase(4, 3)
+
+	noNeighbour := maze.getCellNeighbour(maze.getCell(3, 2), Right)
+	if noNeighbour != nil {
+		t.Error("Expected no Right neighbour for (3,2)")
+	}
+
+	neighbour := maze.getCellNeighbour(maze.getCell(2, 1), Right)
+	expected := maze.getCell(3, 1)
+	if neighbour == nil {
+		t.Error("Expected to have neighbour for (2,1) but found none")
+	} else if *neighbour != expected {
+		t.Errorf("Expected Right neighbour for (2,1) is %v, actual %v", expected, *neighbour)
 	}
 }
