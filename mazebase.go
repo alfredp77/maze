@@ -25,15 +25,23 @@ type cellWall struct {
 	isOpen bool
 }
 
-func generateCells(width uint32, height uint32) []cell {
+type maze struct {
+	cells  []cell
+	width  uint32
+	height uint32
+}
+
+func generateMazeBase(width uint32, height uint32) maze {
 	cells := []cell{}
-	for x := uint32(0); x < width; x++ {
-		for y := uint32(0); y < height; y++ {
+	for y := uint32(0); y < height; y++ {
+		for x := uint32(0); x < width; x++ {
 			newCell := createCell(x, y)
 			cells = append(cells, newCell)
 		}
 	}
-	return cells
+	return maze{
+		cells, width, height,
+	}
 }
 
 func createCell(x uint32, y uint32) cell {
@@ -52,4 +60,13 @@ func createCell(x uint32, y uint32) cell {
 
 func createWall(dir direction) cellWall {
 	return cellWall{dir: dir, isOpen: false}
+}
+
+func (m maze) getCell(x uint32, y uint32) cell {
+	idx := m.getCellIndex(x, y)
+	return m.cells[idx]
+}
+
+func (m maze) getCellIndex(x uint32, y uint32) uint32 {
+	return x + y*m.width
 }
