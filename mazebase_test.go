@@ -151,3 +151,42 @@ func TestGetCellNeighbour_Right(t *testing.T) {
 		t.Errorf("Expected Right neighbour for (2,1) is %v, actual %v", expected, *neighbour)
 	}
 }
+
+func TestGetOppositeDirection(t *testing.T) {
+	upOpposite := Up.getOpposite()
+	if upOpposite != Down {
+		t.Errorf("Expected opposite of Up is Down(%v), actual %v", Down, upOpposite)
+	}
+
+	downOpposite := Down.getOpposite()
+	if downOpposite != Up {
+		t.Errorf("Expected opposite of Down is Up(%v), actual %v", Up, downOpposite)
+	}
+
+	leftOpposite := Left.getOpposite()
+	if leftOpposite != Right {
+		t.Errorf("Expected opposite of Left is Right(%v), actual %v", Right, leftOpposite)
+	}
+
+	rightOpposite := Right.getOpposite()
+	if rightOpposite != Left {
+		t.Errorf("Expected opposite of Right is Left(%v), actual %v", Left, leftOpposite)
+	}
+}
+
+func TestGetWall(t *testing.T) {
+	maze := generateMazeBase(2, 3)
+
+	for y := uint32(0); y < 3; y++ {
+		for x := uint32(0); x < 2; x++ {
+			currentCell := maze.getCell(x, y)
+
+			for _, dir := range Directions {
+				wall := currentCell.getWall(dir)
+				if wall.dir != dir {
+					t.Errorf("Expected wall dir is (%v), actual %v", dir, wall.dir)
+				}
+			}
+		}
+	}
+}

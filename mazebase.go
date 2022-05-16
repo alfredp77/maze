@@ -10,6 +10,8 @@ const (
 	Right
 )
 
+var Directions []direction = []direction{Up, Down, Left, Right}
+
 type position struct {
 	x uint32
 	y uint32
@@ -29,6 +31,24 @@ type maze struct {
 	cells  []cell
 	width  uint32
 	height uint32
+}
+
+func (d direction) getOpposite() direction {
+	if d == Up {
+		return Down
+	}
+	if d == Down {
+		return Up
+	}
+	if d == Left {
+		return Right
+	}
+
+	return Left
+}
+
+func (c cell) getWall(dir direction) cellWall {
+	return c.walls[dir-1]
 }
 
 func generateMazeBase(width uint32, height uint32) maze {
