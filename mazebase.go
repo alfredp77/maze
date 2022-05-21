@@ -56,7 +56,7 @@ func (c cell) getWall(dir direction) cellWall {
 	return c.walls[dir-1]
 }
 
-func (c cell) setWall(wall cellWall) {
+func (c *cell) setWall(wall cellWall) {
 	c.walls[wall.dir-1] = wall
 }
 
@@ -95,9 +95,9 @@ func createOpenWall(dir direction) cellWall {
 	return cellWall{dir: dir, isOpen: true}
 }
 
-func (m maze) getCell(x uint32, y uint32) cell {
+func (m maze) getCell(x uint32, y uint32) *cell {
 	idx := m.getCellIndex(x, y)
-	return m.cells[idx]
+	return &m.cells[idx]
 }
 
 func (m maze) getCellIndex(x uint32, y uint32) uint32 {

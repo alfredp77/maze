@@ -62,7 +62,7 @@ func TestGetCell(t *testing.T) {
 	maze := generateMazeBase(2, 3)
 
 	for idx := uint32(0); idx < 6; idx++ {
-		expected := maze.cells[idx]
+		expected := &maze.cells[idx]
 		actual := maze.getCell(expected.pos.x, expected.pos.y)
 
 		if expected != actual {

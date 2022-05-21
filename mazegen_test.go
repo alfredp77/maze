@@ -18,7 +18,7 @@ func runGetCellNeighbourTest(t *testing.T, dir direction, cellPos position, neig
 	expected := theMaze.getCell(neighbourPos.x, neighbourPos.y)
 	if neighbour == nil {
 		t.Errorf("Expected to have %v neighbour for (%d,%d) but found none", dir.Name(), cellPos.x, cellPos.y)
-	} else if *neighbour != expected {
+	} else if neighbour != expected {
 		t.Errorf("Expected %v neighbour for (%d,%d) is %v, actual %v", dir.Name(), cellPos.x, cellPos.y, expected, *neighbour)
 	}
 }
@@ -57,33 +57,29 @@ func TestAreNeighbours(t *testing.T) {
 }
 
 func TestAreConnected_NotConnectedNeighbours(t *testing.T) {
-	maze := generateMazeBase(5, 3)
+	cell1 := theMaze.getCell(2, 2)
+	cell2 := theMaze.getCell(3, 2)
 
-	cell1 := maze.getCell(2, 2)
-	cell2 := maze.getCell(3, 2)
-
-	isConnected, dir := maze.areConnected(cell1, cell2)
+	isConnected, dir := theMaze.areConnected(cell1, cell2)
 	if isConnected {
 		t.Error("Expected not connected, actual is connected")
 	}
 	if dir != Right {
-		t.Errorf("Expected Right(%v), actual %v", Right, dir)
+		t.Errorf("Expected %v, actual %v", Right.Name(), dir.Name())
 	}
 }
 
 func TestAreConnected_ConnectedNeighbours(t *testing.T) {
-	maze := generateMazeBase(5, 3)
+	cell1 := theMaze.getCell(2, 2)
+	cell2 := theMaze.getCell(3, 2)
 
-	cell1 := maze.getCell(2, 2)
-	cell2 := maze.getCell(3, 2)
-	cell1.setWall(createOpenWall(Right))
-	cell2.setWall(createOpenWall(Left))
+	theMaze.connect(cell1, cell2)
 
-	isConnected, dir := maze.areConnected(cell1, cell2)
+	isConnected, dir := theMaze.areConnected(cell1, cell2)
 	if !isConnected {
 		t.Error("Expected connected, actual is not connected")
 	}
 	if dir != Right {
-		t.Errorf("Expected Right(%v), actual %v", Right, dir)
+		t.Errorf("Expected %v, actual %v", Right.Name(), dir.Name())
 	}
 }

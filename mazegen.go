@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // func (m maze) generatePaths() {
 // 	source := rand.NewSource(time.Now().UnixNano())
 // 	random := rand.New(source)
@@ -19,49 +21,50 @@ package main
 // 	}
 // }
 
-func (m maze) getCellNeighbour(c cell, dir direction) *cell {
+func (m maze) getCellNeighbour(c *cell, dir direction) *cell {
 	if dir == Up {
 		if c.pos.y > 0 {
-			found := m.getCell(c.pos.x, c.pos.y-1)
-			return &found
+			return m.getCell(c.pos.x, c.pos.y-1)
 		}
 	}
 
 	if dir == Down {
 		if c.pos.y < m.height-1 {
-			found := m.getCell(c.pos.x, c.pos.y+1)
-			return &found
+			return m.getCell(c.pos.x, c.pos.y+1)
 		}
 	}
 
 	if dir == Left {
 		if c.pos.x > 0 {
-			found := m.getCell(c.pos.x-1, c.pos.y)
-			return &found
+			return m.getCell(c.pos.x-1, c.pos.y)
 		}
 	}
 
 	if dir == Right {
 		if c.pos.x < m.width-1 {
-			found := m.getCell(c.pos.x+1, c.pos.y)
-			return &found
+			return m.getCell(c.pos.x+1, c.pos.y)
 		}
 	}
 
 	return nil
 }
 
-func (m maze) areNeighbours(cell1 cell, cell2 cell) direction {
+func (m maze) areNeighbours(cell1 *cell, cell2 *cell) direction {
 	for _, dir := range ValidDirections {
 		neighbour := m.getCellNeighbour(cell1, dir)
-		if neighbour != nil && *neighbour == cell2 {
+		if neighbour != nil {
+			fmt.Println(dir.Name(), "cell2 found", *neighbour)
+		} else {
+			fmt.Println(dir.Name(), "nil!")
+		}
+		if neighbour != nil && neighbour == cell2 {
 			return dir
 		}
 	}
 	return None
 }
 
-func (m maze) areConnected(cell1 cell, cell2 cell) (bool, direction) {
+func (m maze) areConnected(cell1 *cell, cell2 *cell) (bool, direction) {
 	dir := m.areNeighbours(cell1, cell2)
 	if dir != None {
 		wall1 := cell1.getWall(dir)
@@ -76,13 +79,10 @@ func (m maze) areConnected(cell1 cell, cell2 cell) (bool, direction) {
 	return false, None
 }
 
-func (m maze) connect(cell1 cell, cell2 cell) {
+func (m maze) connect(cell1 *cell, cell2 *cell) {
 	isConnected, dir := m.areConnected(cell1, cell2)
 	if !isConnected {
-		wall1 := cell1.getWall(dir)
-		wall2 := cell2.getWall(dir.getOpposite())
-
-		wall1.isOpen = true
-		wall2.isOpen = true
+		cell1.setWall(createOpenWall(dir))
+		cell2.setWall(createOpenWall(dir.getOpposite()))
 	}
 }
