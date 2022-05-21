@@ -10,7 +10,12 @@ const (
 	Right
 )
 
-var Directions []direction = []direction{Up, Down, Left, Right}
+var ValidDirections []direction = []direction{Up, Down, Left, Right}
+var DirectionNames []string = []string{"None", "Up", "Down", "Left", "Right"}
+
+func (d direction) Name() string {
+	return DirectionNames[d]
+}
 
 type position struct {
 	x uint32
@@ -51,6 +56,10 @@ func (c cell) getWall(dir direction) cellWall {
 	return c.walls[dir-1]
 }
 
+func (c cell) setWall(wall cellWall) {
+	c.walls[wall.dir-1] = wall
+}
+
 func generateMazeBase(width uint32, height uint32) maze {
 	cells := []cell{}
 	for y := uint32(0); y < height; y++ {
@@ -70,16 +79,20 @@ func createCell(x uint32, y uint32) cell {
 			x, y,
 		},
 		walls: [4]cellWall{
-			createWall(Up),
-			createWall(Down),
-			createWall(Left),
-			createWall(Right),
+			createClosedWall(Up),
+			createClosedWall(Down),
+			createClosedWall(Left),
+			createClosedWall(Right),
 		},
 	}
 }
 
-func createWall(dir direction) cellWall {
+func createClosedWall(dir direction) cellWall {
 	return cellWall{dir: dir, isOpen: false}
+}
+
+func createOpenWall(dir direction) cellWall {
+	return cellWall{dir: dir, isOpen: true}
 }
 
 func (m maze) getCell(x uint32, y uint32) cell {
@@ -89,36 +102,4 @@ func (m maze) getCell(x uint32, y uint32) cell {
 
 func (m maze) getCellIndex(x uint32, y uint32) uint32 {
 	return x + y*m.width
-}
-
-func (m maze) getCellNeighbour(c cell, dir direction) *cell {
-	if dir == Up {
-		if c.pos.y > 0 {
-			found := m.getCell(c.pos.x, c.pos.y-1)
-			return &found
-		}
-	}
-
-	if dir == Down {
-		if c.pos.y < m.height-1 {
-			found := m.getCell(c.pos.x, c.pos.y+1)
-			return &found
-		}
-	}
-
-	if dir == Left {
-		if c.pos.x > 0 {
-			found := m.getCell(c.pos.x-1, c.pos.y)
-			return &found
-		}
-	}
-
-	if dir == Right {
-		if c.pos.x < m.width-1 {
-			found := m.getCell(c.pos.x+1, c.pos.y)
-			return &found
-		}
-	}
-
-	return nil
 }
