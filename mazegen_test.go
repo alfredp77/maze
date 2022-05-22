@@ -83,3 +83,38 @@ func TestAreConnected_ConnectedNeighbours(t *testing.T) {
 		t.Errorf("Expected %v, actual %v", Right.Name(), dir.Name())
 	}
 }
+
+func TestGetUnvisitedNeighbours(t *testing.T) {
+	cellFlags := theMaze.createCellFlags()
+	runUnvisitedTest(t, position{1, 1}, []position{{1, 0}, {0, 1}, {2, 1}, {1, 2}}, cellFlags)
+
+	idx := theMaze.getCellIndex(1, 0)
+	cellFlags[idx] = true
+	runUnvisitedTest(t, position{1, 1}, []position{{0, 1}, {2, 1}, {1, 2}}, cellFlags)
+
+	idx = theMaze.getCellIndex(1, 2)
+	cellFlags[idx] = true
+	runUnvisitedTest(t, position{1, 1}, []position{{0, 1}, {2, 1}}, cellFlags)
+}
+
+func runUnvisitedTest(t *testing.T, cellPos position, expectedUnvisited []position, cellFlags []bool) {
+	theCell := theMaze.getCell(cellPos.x, cellPos.y)
+
+	unvisited := theMaze.getUnvisitedNeighbours(theCell, cellFlags)
+	if len(expectedUnvisited) != len(unvisited) {
+		t.Errorf("Expected %d unvisited neighbours, actual %d", len(expectedUnvisited), len(unvisited))
+	}
+
+	for _, expectedPos := range expectedUnvisited {
+		var expectedCell = theMaze.getCell(expectedPos.x, expectedPos.y)
+		var found *cell = nil
+		for _, actualCell := range unvisited {
+			if actualCell == expectedCell {
+				found = actualCell
+			}
+		}
+		if found == nil {
+			t.Errorf("Expected cell(x:%d,y:%d) to be one of the unvisited neighbours, but not found", expectedCell.pos.x, expectedCell.pos.y)
+		}
+	}
+}

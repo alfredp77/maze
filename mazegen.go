@@ -1,25 +1,62 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
-// func (m maze) generatePaths() {
-// 	source := rand.NewSource(time.Now().UnixNano())
-// 	random := rand.New(source)
+func (m maze) generatePaths() {
+	source := rand.NewSource(time.Now().UnixNano())
+	random := rand.New(source)
 
-// 	x := random.Intn(int(m.width) - 1)
-// 	y := random.Intn(int(m.height) - 1)
+	x := random.Intn(int(m.width) - 1)
+	y := random.Intn(int(m.height) - 1)
 
-// 	startCell := m.getCell(uint32(x), uint32(y))
-// 	pendingCells := []cell{startCell}
-// 	dirs := []direction{Up, Down, Left, Right}
+	startCell := m.getCell(uint32(x), uint32(y))
+	pendingCells := []*cell{startCell}
+	visitedFlags := m.createCellFlags()
 
-// 	for len(pendingCells) > 0 {
-// 		lastIndex := len(pendingCells) - 1
-// 		currentCell := pendingCells[lastIndex]
-// 		pendingCells = pendingCells[:lastIndex]
+	for len(pendingCells) > 0 {
+		lastIndex := len(pendingCells) - 1
+		currentCell := pendingCells[lastIndex]
+		visitedFlags[m.getCellIndex(currentCell.pos.x, currentCell.pos.y)] = true
 
-// 	}
-// }
+		unvisitedNeighbours := m.getUnvisitedNeighbours(currentCell, visitedFlags)
+		if len(unvisitedNeighbours) > 0 {
+			idx := random.Intn(len(unvisitedNeighbours) - 1)
+			m.connect(currentCell, unvisitedNeighbours[idx])
+			pendingCells = append(pendingCells, unvisitedNeighbours[idx])
+		} else {
+			pendingCells = pendingCells[:lastIndex]
+		}
+	}
+}
+
+func (m maze) createCellFlags() []bool {
+	result := []bool{}
+	cellCount := m.width * m.height
+	for i := uint32(0); i < cellCount; i++ {
+		result = append(result, false)
+	}
+	return result
+}
+
+func (m maze) getUnvisitedNeighbours(c *cell, visitedFlags []bool) []*cell {
+	result := []*cell{}
+	for _, dir := range ValidDirections {
+		neighbour := m.getCellNeighbour(c, dir)
+		if neighbour == nil {
+			continue
+		}
+
+		idx := m.getCellIndex(neighbour.pos.x, neighbour.pos.y)
+		if !visitedFlags[idx] {
+			result = append(result, neighbour)
+		}
+	}
+	return result
+}
 
 func (m maze) getCellNeighbour(c *cell, dir direction) *cell {
 	if dir == Up {
