@@ -23,12 +23,15 @@ func (m maze) generatePaths() {
 		visitedFlags[m.getCellIndex(currentCell.pos.x, currentCell.pos.y)] = true
 
 		unvisitedNeighbours := m.getUnvisitedNeighbours(currentCell, visitedFlags)
-		if len(unvisitedNeighbours) > 0 {
-			idx := random.Intn(len(unvisitedNeighbours) - 1)
+		idx := len(unvisitedNeighbours) - 1
+		if idx < 0 {
+			pendingCells = pendingCells[:lastIndex]
+		} else {
+			if idx > 0 {
+				idx = random.Intn(idx)
+			}
 			m.connect(currentCell, unvisitedNeighbours[idx])
 			pendingCells = append(pendingCells, unvisitedNeighbours[idx])
-		} else {
-			pendingCells = pendingCells[:lastIndex]
 		}
 	}
 }
@@ -102,6 +105,9 @@ func (m maze) areNeighbours(cell1 *cell, cell2 *cell) direction {
 }
 
 func (m maze) areConnected(cell1 *cell, cell2 *cell) (bool, direction) {
+	if cell1 == nil || cell2 == nil {
+		return false, None
+	}
 	dir := m.areNeighbours(cell1, cell2)
 	if dir != None {
 		wall1 := cell1.getWall(dir)
@@ -114,6 +120,18 @@ func (m maze) areConnected(cell1 *cell, cell2 *cell) (bool, direction) {
 		}
 	}
 	return false, None
+}
+
+func (m maze) getConnectedNeighbours(cell1 *cell) []*cell {
+	result := []*cell{}
+	for _, dir := range ValidDirections {
+		neighbour := m.getCellNeighbour(cell1, dir)
+		areConnected, _ := m.areConnected(cell1, neighbour)
+		if areConnected {
+			result = append(result, neighbour)
+		}
+	}
+	return result
 }
 
 func (m maze) connect(cell1 *cell, cell2 *cell) {

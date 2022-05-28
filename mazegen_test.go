@@ -118,3 +118,39 @@ func runUnvisitedTest(t *testing.T, cellPos position, expectedUnvisited []positi
 		}
 	}
 }
+
+func TestGeneratePaths(t *testing.T) {
+	theMaze = generateMazeBase(3, 3)
+	theMaze.generatePaths()
+
+	connectedFlags := theMaze.createCellFlags()
+	visitedFlags := theMaze.createCellFlags()
+
+	startCell := theMaze.getCell(0, 0)
+	var cellCount uint32 = 1
+	nextCells := []*cell{startCell}
+	visitedFlags[theMaze.getCellIndex(0, 0)] = true
+
+	for len(nextCells) > 0 {
+		lastIndex := len(nextCells) - 1
+		currentCell := nextCells[lastIndex]
+		nextCells = nextCells[:lastIndex]
+
+		connectedNeighbours := theMaze.getConnectedNeighbours(currentCell)
+		if len(connectedNeighbours) > 0 {
+			connectedFlags[theMaze.getCellIndex(currentCell.pos.x, currentCell.pos.y)] = true
+			for _, nextCell := range connectedNeighbours {
+				cellIdx := theMaze.getCellIndex(nextCell.pos.x, nextCell.pos.y)
+				if !visitedFlags[cellIdx] {
+					visitedFlags[cellIdx] = true
+					cellCount += 1
+					nextCells = append(nextCells, nextCell)
+				}
+			}
+		}
+	}
+
+	if theMaze.getCellCount() != cellCount {
+		t.Errorf("Expected cell count %d, actual %d", theMaze.getCellCount(), cellCount)
+	}
+}

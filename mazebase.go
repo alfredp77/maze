@@ -100,6 +100,10 @@ func (m maze) getCell(x uint32, y uint32) *cell {
 	return &m.cells[idx]
 }
 
+func (m maze) getCellCount() uint32 {
+	return m.height * m.width
+}
+
 func (m maze) getCellIndex(x uint32, y uint32) uint32 {
 	return x + y*m.width
 }
