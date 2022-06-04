@@ -12,6 +12,9 @@ func (m maze) generatePaths() {
 
 	x := random.Intn(int(m.width) - 1)
 	y := random.Intn(int(m.height) - 1)
+	randoms := make([]byte, m.getCellCount()*4)
+	random.Read(randoms)
+	currentRandomIdx := 0
 
 	startCell := m.getCell(uint32(x), uint32(y))
 	pendingCells := []*cell{startCell}
@@ -28,7 +31,8 @@ func (m maze) generatePaths() {
 			pendingCells = pendingCells[:lastIndex]
 		} else {
 			if idx > 0 {
-				idx = random.Intn(idx)
+				idx = (int)(randoms[currentRandomIdx]) % len(unvisitedNeighbours)
+				currentRandomIdx++
 			}
 			m.connect(currentCell, unvisitedNeighbours[idx])
 			pendingCells = append(pendingCells, unvisitedNeighbours[idx])

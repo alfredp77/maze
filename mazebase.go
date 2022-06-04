@@ -38,6 +38,10 @@ type maze struct {
 	height uint32
 }
 
+type canvas interface {
+	render(m maze)
+}
+
 func (d direction) getOpposite() direction {
 	if d == Up {
 		return Down
